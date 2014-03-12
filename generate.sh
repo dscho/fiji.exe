@@ -22,7 +22,7 @@ cut_script="sed '1,/^EOFEOFEOF/d'"
 test --test-sh != "$1" || {
 	argv0="$0"
 	shift
-	eval "$(eval $cut_script < "$argv0")"
+	eval "$(eval "$cut_script" < "$argv0")"
 	exit
 }
 
