@@ -39,15 +39,16 @@ filesize () {
 	stat -c %s fiji.exe
 }
 
-printf 'MZ= eval "$(%s 2> /dev/null)"; exit\n' \
-	"dd if=\"\$0\" skip=1 bs=$(stat -c %s 0.exe)" > fiji.exe &&
+printf 'MZ= eval "$(%s < "$0")"; exit\n' \
+	"sed '1,/^EOFEOFEOF/d'" > fiji.exe &&
 dd if=0.exe bs=$(filesize) skip=1 >> fiji.exe &&
-dd if="$basename" ibs=$((7+$(offsetof '^exit 0$'))) skip=1 >> fiji.exe ||
+dd if="$basename" ibs=$((6+$(offsetof '^exit 0$'))) skip=1 >> fiji.exe ||
 die Could not put together the hybrid executable
 
 rm 0.exe ||
 die Could not delete intermediate file
 
 exit 0
+EOFEOFEOF
 
 echo "args: $*" >&2
