@@ -29,10 +29,9 @@ test --test-sh != "$1" || {
 test 0 = $# ||
 die "Usage: $0 [--test-sh [<arg>...]]"
 
-case "$(uname)" in
-MINGW*) ;; # fine
-*) die "Need to run on Windows, except with --test-sh";;
-esac
+uname="$(uname)"
+test "a${uname#MINGW}" != "a$uname" ||
+die "Need to run on Windows, except with --test-sh"
 
 cd "$(pwd)" ||
 die Could not determine current directory
