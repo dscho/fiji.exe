@@ -76,4 +76,24 @@ die Could not delete intermediate file
 exit 0
 EOFEOFEOF
 
-echo "args: $*" >&2
+# When found in PATH, "$0" will have the absolute path on Linux & MacOSX
+ij_dir="$(dirname "$0")"
+
+uname_s="$(uname -s)"
+uname_m="$(uname -m)"
+
+case "$uname_m,$uname_s" in
+i386,Linux)
+	launcher=ImageJ-linux32;;
+x86_64,Linux)
+	launcher=ImageJ-linux64;;
+*,Darwin)
+	launcher=Contents/MacOS/ImageJ-tiger;;
+*)
+	die "Cannot execute ImageJ on $uname_s ($uname_m) yet";;
+esac
+
+test -x "$ij_dir"/$launcher ||
+die "Did not find $launcher in $ij_dir"
+
+exec "$ij_dir"/$launcher "$@"
