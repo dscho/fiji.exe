@@ -28,6 +28,21 @@ die Could not determine current directory
 gcc -s -o 0.exe fiji.c ||
 die Could not compile fiji.c
 
+launcher=ImageJ-win32.exe
+test -x $launcher ||
+launcher=ImageJ-win64.exe
+if test -x $launcher
+then
+	if test -f fiji.ico
+	then
+		./$launcher --set-icon 0.exe fiji.ico
+	else
+		echo "No fiji.ico found; *not* setting the icon" >&2
+	fi
+else
+	echo "No ImageJ launcher found; *not* setting the icon" >&2
+fi
+
 basename="${0##*/}"
 
 offsetof () {
