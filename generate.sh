@@ -17,6 +17,11 @@ die () {
 	exit 1
 }
 
+case "$(uname)" in
+MINGW*) ;; # fine
+*) die Need to run on Windows;;
+esac
+
 cd "$(pwd)" ||
 die Could not determine current directory
 
