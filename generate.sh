@@ -17,9 +17,21 @@ die () {
 	exit 1
 }
 
+cut_script="sed '1,/^EOFEOFEOF/d'"
+
+test --test-sh != "$1" || {
+	argv0="$0"
+	shift
+	eval "$(eval $cut_script < "$argv0")"
+	exit
+}
+
+test 0 = $# ||
+die "Usage: $0 [--test-sh [<arg>...]]"
+
 case "$(uname)" in
 MINGW*) ;; # fine
-*) die Need to run on Windows;;
+*) die "Need to run on Windows, except with --test-sh";;
 esac
 
 cd "$(pwd)" ||
@@ -54,8 +66,7 @@ filesize () {
 	stat -c %s fiji.exe
 }
 
-printf 'MZ= eval "$(%s < "$0")"; exit\n' \
-	"sed '1,/^EOFEOFEOF/d'" > fiji.exe &&
+printf 'MZ= eval "$(%s < "$0")"; exit\n' "$cut_script" > fiji.exe &&
 dd if=0.exe bs=$(filesize) skip=1 >> fiji.exe &&
 dd if="$basename" ibs=$((6+$(offsetof '^exit 0$'))) skip=1 >> fiji.exe ||
 die Could not put together the hybrid executable
